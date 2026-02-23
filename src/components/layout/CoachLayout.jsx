@@ -3,14 +3,13 @@
 //  Removed: Coaching Locations (map)
 //  Updated: Meetings → Coach Meetings
 // ═══════════════════════════════════════════════════════
-import { Home, Users, BarChart2, GitCompare, LogOut, Crosshair, Calendar, HelpCircle } from 'lucide-react';
+import { Home, Users, GitCompare, LogOut, Crosshair, Calendar, HelpCircle } from 'lucide-react';
 import { Avatar } from '../ui/SharedComponents';
 
 const NAV_MAIN = [
-  { id: 'dashboard',  icon: Home,       label: 'Dashboard' },
-  { id: 'athletes',   icon: Users,      label: 'All Athletes' },
-  { id: 'analytics',  icon: BarChart2,  label: 'Analytics' },
-  { id: 'compare',    icon: GitCompare, label: 'Compare Athletes' },
+  { id: 'dashboard',     icon: Home,        label: 'Dashboard' },
+  { id: 'teamBuilding',  icon: Users,       label: 'Team Building' },
+  { id: 'compare',       icon: GitCompare,  label: 'Compare Athletes' },
 ];
 
 const NAV_TOOLS = [

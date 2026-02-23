@@ -3,9 +3,9 @@
 //  Layout: main content + right profile sidebar; quote center; tier sections on scroll
 // ═══════════════════════════════════════════════════════
 
-import { Activity, Target, Award, TrendingUp, Video, ArrowRight, User, Ruler, FileUp, Trophy } from 'lucide-react';
-import { computeCompositeScore, classifyTier, recommendPositions } from '../../engine/tierEngine';
-import { ScoreRing, TierBadge, MetricBar, StatCard, SectionHeader } from '../../components/ui/SharedComponents';
+import { Activity, Target, Award, TrendingUp, Video, User, Ruler, FileUp, Trophy } from 'lucide-react';
+import { computeCompositeScore, classifyTier } from '../../engine/tierEngine';
+import { ScoreRing, TierBadge, StatCard, SectionHeader, Avatar } from '../../components/ui/SharedComponents';
 import { DEMO_REPORT } from '../../data/mockAthletes';
 
 const DASHBOARD_QUOTE = "Excellence is not a destination; it's a continuous journey.";
@@ -20,8 +20,6 @@ export default function PlayerDashboard({ user, onNavigate, report }) {
   const activeReport = report || DEMO_REPORT;
   const score = computeCompositeScore(activeReport.metrics);
   const tier = classifyTier(score);
-  const positions = recommendPositions(activeReport.metrics);
-  const benchmarks = { speed: 74, acceleration: 71, agility: 72, balance: 68, technique: 73, stamina: 70 };
 
   const profileAge = user.age ?? '—';
   const profileHeight = user.height ?? '—';
@@ -67,7 +65,7 @@ export default function PlayerDashboard({ user, onNavigate, report }) {
         </div>
 
         {/* ── Top row: Score + stats ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 20, marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 20, marginBottom: 32 }}>
           <div className="card fade-up" style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 16, padding: '32px 40px', animationDelay: '0.05s',
@@ -86,78 +84,6 @@ export default function PlayerDashboard({ user, onNavigate, report }) {
             <StatCard label="Best Metric" value="76" sub="Technique score" icon={Target} color="var(--cyan)" delay={0.12} />
             <StatCard label="Rank (Peers)" value="Top 28%" sub="Based on EPI score" icon={Award} color="var(--amber)" delay={0.16} />
             <StatCard label="Tier Progress" value={`${score}/75`} sub="Points to Tier B" icon={TrendingUp} color="var(--purple)" delay={0.20} />
-          </div>
-        </div>
-
-        {/* ── Metrics + Positions ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20, marginBottom: 32 }}>
-          <div className="card fade-up" style={{ animationDelay: '0.22s' }}>
-            <SectionHeader
-              title="PERFORMANCE METRICS"
-              subtitle="Your 6 biomechanical scores vs age-group benchmark"
-              action={
-                <button onClick={() => onNavigate('reports')} style={{
-                  background: 'none', border: 'none', color: 'var(--green)',
-                  fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
-                }}>
-                  Full Report <ArrowRight size={13} />
-                </button>
-              }
-            />
-            {Object.entries(activeReport.metrics).map(([key, val]) => (
-              <MetricBar key={key} metricKey={key} value={val} benchmark={benchmarks[key]} />
-            ))}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div className="card fade-up" style={{ animationDelay: '0.26s' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'var(--muted2)', marginBottom: 16, textTransform: 'uppercase' }}>Recommended Positions</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {positions.map((pos, i) => (
-                  <div key={pos} style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '12px 14px',
-                    background: i === 0 ? 'rgba(0,255,135,0.06)' : 'var(--surface)',
-                    border: `1px solid ${i === 0 ? 'rgba(0,255,135,0.2)' : 'var(--border)'}`,
-                    borderRadius: 10,
-                  }}>
-                    <div style={{
-                      fontFamily: 'var(--font-mono)', fontSize: 10,
-                      color: i === 0 ? 'var(--green)' : 'var(--muted2)',
-                      background: i === 0 ? 'rgba(0,255,135,0.1)' : 'rgba(255,255,255,0.04)',
-                      padding: '2px 8px', borderRadius: 4,
-                    }}>#{i + 1}</div>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: i === 0 ? 'var(--text)' : 'var(--text2)' }}>{pos}</span>
-                    {i === 0 && <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--green)' }}>Best fit</span>}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="card fade-up" style={{ animationDelay: '0.30s' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'var(--muted2)', marginBottom: 14, textTransform: 'uppercase' }}>Quick Actions</div>
-              {[
-                { label: 'View Full Report', page: 'reports', icon: Target, color: 'var(--green)' },
-                { label: 'Track Progress', page: 'progress', icon: TrendingUp, color: 'var(--cyan)' },
-                { label: 'New Assessment', page: 'upload', icon: Video, color: 'var(--amber)' },
-              ].map(({ label, page, icon: Icon, color }) => (
-                <div
-                  key={label}
-                  onClick={() => onNavigate(page)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '11px 12px', borderRadius: 9,
-                    cursor: 'pointer', transition: 'background 0.2s', marginBottom: 4,
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <div style={{ width: 32, height: 32, background: `${color}14`, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon size={15} color={color} />
-                  </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, flex: 1 }}>{label}</span>
-                  <ArrowRight size={14} color="var(--muted)" />
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -208,6 +134,15 @@ export default function PlayerDashboard({ user, onNavigate, report }) {
           overflowY: 'auto',
         }}
       >
+        {/* Name + profile icon at top ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+          <Avatar initials={(user.name || 'U').slice(0, 2).toUpperCase()} size={48} color="var(--green)" />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: 'var(--font-head)', fontSize: 18, letterSpacing: 1.2, color: 'var(--text)', lineHeight: 1.2 }}>{user.name}</div>
+            <div style={{ fontSize: 11, color: 'var(--muted2)', marginTop: 2 }}>Athlete · {user.region || 'India'}</div>
+          </div>
+        </div>
+
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'var(--muted2)', marginBottom: 16, textTransform: 'uppercase' }}>Profile</div>
 
         {/* Current tier ── */}
